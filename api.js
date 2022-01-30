@@ -5,16 +5,28 @@ const util = require("util");
 fs.readFile = util.promisify(fs.readFile);
 fs.writeFile = util.promisify(fs.writeFile);
 
-// Not perfect, but chance of colision is 1 in a billion, right?
+/**
+ * Generates a random numeric id. Not perfect, but chance of 
+ * colision is 1 in a billion, right?
+ * @returns {number} a random number between 1 and a billion.
+ */
 function randID(){
     return Math.floor(Math.random() * 1000000000);
 }
 
+/**
+ * Get all notes stored in the "db", as an array of objects with
+ * fields title, text and id.
+ */
 notes.get("/notes", (req, res) => {
     fs.readFile("./db/db.json")
         .then((data) => res.json(JSON.parse(data)));
 });
 
+/**
+ * Writes a new note to the ""db"". Returns the note written
+ * as the body of the response, with its new ID.
+ */
 notes.post("/notes", (req, res) => {
     fs.readFile("./db/db.json")
         .then((data) => {
@@ -34,6 +46,9 @@ notes.post("/notes", (req, res) => {
         });
 });
 
+/**
+ * Removes a note from the """db""", if there is a note with the given id.
+ */
 notes.delete("/notes/:id", (req, res) => {
     let id = req.params.id;
     fs.readFile("./db/db.json")
@@ -41,7 +56,7 @@ notes.delete("/notes/:id", (req, res) => {
             db = JSON.parse(data);
             index = db.findIndex((note) => note.id == id); //Double equals because note.id is string
             if(index < 0){ // ID not found
-                res.status(404).json(index);
+                res.status(404).json(`${id} was not found.`);
             }else{
                 db.splice(index, 1);
                 fs.writeFile("./db/db.json", JSON.stringify(db))
