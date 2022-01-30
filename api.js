@@ -11,13 +11,11 @@ function randID(){
 }
 
 notes.get("/notes", (req, res) => {
-    console.log("Getting...")
     fs.readFile("./db/db.json")
         .then((data) => res.json(JSON.parse(data)));
 });
 
 notes.post("/notes", (req, res) => {
-    console.log("Posting...")
     fs.readFile("./db/db.json")
         .then((data) => {
             let note = {
@@ -37,14 +35,11 @@ notes.post("/notes", (req, res) => {
 });
 
 notes.delete("/notes/:id", (req, res) => {
-    console.log("Deleting...")
     let id = req.params.id;
-    console.log(id);
     fs.readFile("./db/db.json")
         .then((data) => {
             db = JSON.parse(data);
             index = db.findIndex((note) => note.id == id); //Double equals because note.id is string
-            console.log(index);
             if(index < 0){ // ID not found
                 res.status(404).json(index);
             }else{
